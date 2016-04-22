@@ -12,18 +12,21 @@ import (
 
 func main() {
 	staticHandler := http.FileServer(http.Dir("files"))
-	http.Handle("/", staticHandler)
-	http.Handle("/static/", staticHandler)
 
-	http.HandleFunc("/robots.txt", http.NotFound)
-	http.HandleFunc("/favicon.ico", http.NotFound)
+	server := HSTSServer{}
 
-	http.HandleFunc("/checkdomain/", checkdomain)
-	http.HandleFunc("/status/", status)
+	server.Handle("/", staticHandler)
+	server.Handle("/static/", staticHandler)
 
-	http.HandleFunc("/submit/", submit)
-	http.HandleFunc("/pending", pending)
-	http.HandleFunc("/update", update)
+	server.HandleFunc("/robots.txt", http.NotFound)
+	server.HandleFunc("/favicon.ico", http.NotFound)
+
+	server.HandleFunc("/checkdomain/", checkdomain)
+	server.HandleFunc("/status/", status)
+
+	server.HandleFunc("/submit/", submit)
+	server.HandleFunc("/pending", pending)
+	server.HandleFunc("/update", update)
 
 	http.ListenAndServe(":8080", nil)
 }
