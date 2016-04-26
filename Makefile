@@ -1,19 +1,20 @@
-PROJECT = github.com/chromium/hstspreload/...
+.PHONY: serve
+serve: check
+	go run *.go
 
-.PHONY: test
-test: lint
-	go test ${PROJECT}
+.PHONY: deploy
+deploy: check
+	aedeploy gcloud preview app deploy app.yaml --promote
 
-.PHONY: build
-build:
-	go build ${PROJECT}
+CURRENT_DIR = "$(shell pwd)"
+EXPECTED_DIR = "${GOPATH}/src/github.com/chromium/hstspreload/hstspreload.appspot.com"
 
-.PHONY: lint
-lint:
-	go vet ${PROJECT}
-
-.PHONY: pre-commit
-pre-commit: lint build test
-
-.PHONY: travis
-travis: pre-commit
+.PHONY: check
+check:
+ifeq (${CURRENT_DIR}, ${EXPECTED_DIR})
+	@echo "PASS: Current directory is in \$$GOPATH."
+else
+	@echo "FAIL"
+	@echo "Expected: ${EXPECTED_DIR}"
+	@echo "Actual:   ${CURRENT_DIR}"
+endif
